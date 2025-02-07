@@ -22,7 +22,9 @@ export const analyzeMessage = async (message, source, context) => {
         }
 
         prompt += `\n\n### Important Instructions:  
-        - Respond **ONLY** with a valid JSON object.  
+        - Respond **ONLY** with a valid JSON object.
+        - Do not hallucinate
+        - If links are provided in the message, find out the security of that link
         - No explanations, no extra text, no markdown, no formatting errors.  
         - "scam_likelihood" should be an integer between 0 and 100.  
         - "reasons" must contain exactly **3 reasons**, each a brief but clear phrase.  

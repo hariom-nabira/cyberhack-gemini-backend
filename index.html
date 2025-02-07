@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -66,6 +66,126 @@
                         <ul>
                             ${data.result.reasons.map(reason => `<li>${reason}</li>`).join('')}
                         </ul>
+                    `;
+                } else {
+                    document.getElementById("response").innerHTML = "<p>Error processing request</p>";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("response").innerHTML = "<p>Server error. Please try again.</p>";
+            }
+        }
+    </script>
+
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scam Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        label, select, input, textarea, button {
+            display: block;
+            margin: 10px 0;
+            width: 100%;
+            padding: 8px;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Scam Detector</h2>
+
+    <label for="message">Message:</label>
+    <textarea id="message" rows="4" cols="50"></textarea>
+
+    <label for="source">Source:</label>
+    <select id="source">
+        <option value="Email">Email</option>
+        <option value="SMS">SMS</option>
+        <option value="WhatsApp">WhatsApp</option>
+        <option value="Social Media">Social Media</option>
+        <option value="Phone Call">Phone Call</option>
+        <option value="Other">Other (please specify)</option>
+    </select>
+    <input type="text" id="sourceOther" placeholder="Specify source" style="display: none;">
+
+    <label for="context">Do you know the sender?</label>
+    <select id="context">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+        <option value="Unsure">Unsure</option>
+        <option value="Other">Other (please specify)</option>
+    </select>
+    <input type="text" id="contextOther" placeholder="Specify context" style="display: none;">
+
+    <label for="duration">How long have you been in contact with the sender?</label>
+    <select id="duration">
+        <option value="First-time contact">First-time contact</option>
+        <option value="Less than a week">Less than a week</option>
+        <option value="More than a month">More than a month</option>
+        <option value="Over a year">Over a year</option>
+        <option value="Other">Other (please specify)</option>
+    </select>
+    <input type="text" id="durationOther" placeholder="Specify duration" style="display: none;">
+
+    <button onclick="checkScam()">Analyze Message</button>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById("source").addEventListener("change", function() {
+            document.getElementById("sourceOther").style.display = this.value === "Other" ? "block" : "none";
+        });
+
+        document.getElementById("context").addEventListener("change", function() {
+            document.getElementById("contextOther").style.display = this.value === "Other" ? "block" : "none";
+        });
+
+        document.getElementById("duration").addEventListener("change", function() {
+            document.getElementById("durationOther").style.display = this.value === "Other" ? "block" : "none";
+        });
+
+        async function checkScam() {
+            const message = document.getElementById("message").value;
+            let source = document.getElementById("source").value;
+            let context = document.getElementById("context").value;
+            let duration = document.getElementById("duration").value;
+
+            if (source === "Other") source = document.getElementById("sourceOther").value;
+            if (context === "Other") context = document.getElementById("contextOther").value;
+            if (duration === "Other") duration = document.getElementById("durationOther").value;
+
+            if (!message.trim()) {
+                alert("Please enter a message!");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:5001/analyze", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message, source, context, duration })
+                });
+
+                const data = await response.json();
+
+                if (data.result) {
+                    document.getElementById("response").innerHTML = `
+                        <h3>Scam Likelihood: ${data.result.scam_likelihood}%</h3>
+                        <h4>Reasons:</h4>
+                        <ul>${data.result.reasons.map(reason => `<li>${reason}</li>`).join('')}</ul>
                     `;
                 } else {
                     document.getElementById("response").innerHTML = "<p>Error processing request</p>";
