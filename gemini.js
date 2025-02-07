@@ -10,7 +10,7 @@ export const analyzeMessage = async (message, source, context) => {
     try {
         let prompt = `You are an advanced AI trained to detect scam or fraudulent messages. 
 
-        Analyze the following message and assess its likelihood of being a scam. Assign a scam likelihood score (0-100) and provide reasons.
+        Analyze the following message and assess its likelihood of being a scam. Assign a scam likelihood score (0-100) and provide reasons for why it could or couldn't be scam.
 
         Message: "${message}"`;
 
@@ -27,7 +27,7 @@ export const analyzeMessage = async (message, source, context) => {
         - If links are provided in the message, find out the security of that link
         - No explanations, no extra text, no markdown, no formatting errors.  
         - "scam_likelihood" should be an integer between 0 and 100.  
-        - "reasons" must contain exactly **3 reasons**, each a brief but clear phrase.  
+        - "reasons" must contain exactly **3 reasons** for why it could or couldn't be scam, each a brief but clear phrase.  
         - "category" should classify the scam type (e.g., "Phishing", "Impersonation", "Investment Fraud").
 
         Respond strictly in this JSON format:
