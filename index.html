@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scam Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        label, input, textarea, button {
+            display: block;
+            margin: 10px 0;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Scam Detector</h2>
+
+    <label for="message">Message:</label>
+    <textarea id="message" rows="4" cols="50"></textarea>
+
+    <label for="source">Source (e.g., Email, SMS, WhatsApp):</label>
+    <input type="text" id="source">
+
+    <label for="context">Context (e.g., Do you know the sender?):</label>
+    <input type="text" id="context">
+
+    <button onclick="checkScam()">Analyze Message</button>
+
+    <div id="response"></div>
+
+    <script>
+        async function checkScam() {
+            const message = document.getElementById("message").value;
+            const source = document.getElementById("source").value;
+            const context = document.getElementById("context").value;
+
+            if (!message.trim()) {
+                alert("Please enter a message!");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:5001/analyze", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message, source, context })
+                });
+
+                const data = await response.json();
+
+                if (data.result) {
+                    document.getElementById("response").innerHTML = `
+                        <h3>Scam Likelihood: ${data.result.scam_likelihood}%</h3>
+                        <h4>Reasons:</h4>
+                        <ul>
+                            ${data.result.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                        </ul>
+                    `;
+                } else {
+                    document.getElementById("response").innerHTML = "<p>Error processing request</p>";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("response").innerHTML = "<p>Server error. Please try again.</p>";
+            }
+        }
+    </script>
+
+</body>
+</html>
